@@ -68,17 +68,23 @@ if (prefersReducedMotion) {
 }
 
 /* ============ SCROLL REVEALS ============ */
+// scrub ties animation progress directly to scroll position, so scrolling
+// down plays it forward and scrolling back up plays it in reverse.
 if (!prefersReducedMotion) {
   gsap.utils.toArray<HTMLElement>('[data-reveal]').forEach((el) => {
     gsap.fromTo(
       el,
-      { opacity: 0, y: 40 },
+      { opacity: 0, y: 50 },
       {
         opacity: 1,
         y: 0,
-        duration: 0.9,
-        ease: 'power3.out',
-        scrollTrigger: { trigger: el, start: 'top 85%' },
+        ease: 'none',
+        scrollTrigger: {
+          trigger: el,
+          start: 'top 92%',
+          end: 'top 58%',
+          scrub: 0.4,
+        },
       }
     );
   });
@@ -87,14 +93,18 @@ if (!prefersReducedMotion) {
     const items = Array.from(group.children) as HTMLElement[];
     gsap.fromTo(
       items,
-      { opacity: 0, y: 44 },
+      { opacity: 0, y: 55 },
       {
         opacity: 1,
         y: 0,
-        duration: 0.8,
-        ease: 'power3.out',
+        ease: 'none',
         stagger: 0.12,
-        scrollTrigger: { trigger: group, start: 'top 82%' },
+        scrollTrigger: {
+          trigger: group,
+          start: 'top 88%',
+          end: 'top 30%',
+          scrub: 0.4,
+        },
       }
     );
   });
