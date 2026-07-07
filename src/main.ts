@@ -209,6 +209,7 @@ if (feedbackSlides.length) {
   };
 
   feedbackTrack.addEventListener('touchstart', (e) => {
+    isDragging = true;
     dragStartX = e.touches[0].clientX;
     dragDeltaX = 0;
     window.clearInterval(timer);
