@@ -265,8 +265,20 @@ if (feedbackSlides.length > 1) {
   const goToSlide = (index: number) => {
     const nextIndex = (index + realCount) % realCount;
     if (nextIndex === activeIndex) return;
+
+    // Adjacent steps (what autoplay always does, and most dot clicks) keep
+    // rolling continuously through the clone on wraparound instead of
+    // jumping backward across the whole strip. Non-adjacent dot jumps just
+    // go straight there.
+    const isNextStep = nextIndex === (activeIndex + 1) % realCount;
+    const isPrevStep = nextIndex === (activeIndex - 1 + realCount) % realCount;
+
     setActive(nextIndex);
-    posIndex = activeIndex + 1;
+
+    if (isNextStep) posIndex += 1;
+    else if (isPrevStep) posIndex -= 1;
+    else posIndex = activeIndex + 1;
+
     setTransform(posIndex);
   };
 
