@@ -37,12 +37,15 @@ document.querySelectorAll<HTMLElement>('[data-lang-switch]').forEach((el) => {
 });
 
 /* ============ BACKGROUND MUSIC ============ */
-// Autoplay-with-sound is blocked by browsers without a user gesture, so the
-// track always starts muted; clicking the toggle is the gesture that unmutes it.
+// Browsers block autoplay-with-sound on a first visit with no prior user
+// gesture/engagement, so we try unmuted first and fall back to a muted
+// autoplay (started for real via the toggle button) if that's rejected.
 const bgMusic = document.getElementById('bgMusic') as HTMLAudioElement | null;
 const musicToggles = document.querySelectorAll<HTMLButtonElement>('[data-music-toggle]');
 if (bgMusic && musicToggles.length) {
   bgMusic.src = bgMusicUrl;
+  bgMusic.playbackRate = 0.9; // slightly slower than the source recording - tweak this number to taste
+  bgMusic.volume = 0.01; // 0 (silent) to 1 (full volume) - tweak this number to taste
 
   const isBm = location.pathname.includes('/bm/');
   const actionLabel = (isMuted: boolean) =>
@@ -58,9 +61,15 @@ if (bgMusic && musicToggles.length) {
     });
   };
 
-  bgMusic.muted = true;
-  syncToggles(true);
-  bgMusic.play().catch(() => {});
+  bgMusic.muted = false;
+  bgMusic.play().then(
+    () => syncToggles(false),
+    () => {
+      bgMusic.muted = true;
+      syncToggles(true);
+      bgMusic.play().catch(() => {});
+    }
+  );
 
   musicToggles.forEach((btn) => {
     btn.addEventListener('click', () => {
@@ -251,8 +260,7 @@ if (feedbackSlides.length > 1) {
 
   // After a snap lands on a cloned end slot, jump the real position across
   // instantly (clone and the real slide are pixel-identical, so it's invisible).
-  feedbackTrack.addEventListener('transitionend', (e) => {
-    if (e.propertyName !== 'transform') return;
+  const normalizePos = () => {
     if (posIndex === 0) {
       posIndex = realCount;
       setTransform(posIndex, 0, false);
@@ -260,9 +268,20 @@ if (feedbackSlides.length > 1) {
       posIndex = 1;
       setTransform(posIndex, 0, false);
     }
+  };
+
+  feedbackTrack.addEventListener('transitionend', (e) => {
+    if (e.propertyName !== 'transform') return;
+    normalizePos();
   });
 
   const goToSlide = (index: number) => {
+    // A backgrounded/throttled tab can drop the transitionend event above,
+    // leaving posIndex parked on a clone slot. Re-check here so the very next
+    // step self-corrects instead of drifting further out of bounds (which
+    // would push the track past the last real slide into blank space).
+    normalizePos();
+
     const nextIndex = (index + realCount) % realCount;
     if (nextIndex === activeIndex) return;
 

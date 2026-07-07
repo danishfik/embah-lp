@@ -135,6 +135,8 @@ h1, h2, h3 { font-family: var(--font-display); font-weight: 600; line-height: 1.
 
 .header-left { display: flex; align-items: center; gap: 44px; }
 
+.header-right { display: flex; align-items: center; gap: 22px; }
+
 .top-nav-links { display: none; }
 
 .brand {
@@ -187,17 +189,21 @@ h1, h2, h3 { font-family: var(--font-display); font-weight: 600; line-height: 1.
 
 .nav-cta { padding: 10px 22px; font-size: 0.88rem; }
 
-.lang-switch {
-  border: 1px solid currentColor;
-  border-radius: 999px;
-  padding: 5px 14px !important;
+.header-controls { display: flex; align-items: center; gap: 16px; }
+
+.lang-toggle { display: inline-flex; align-items: center; gap: 7px; }
+.lang-pill {
   font-size: 0.78rem;
   font-weight: 600;
   letter-spacing: 0.06em;
   text-transform: uppercase;
+  color: var(--gold);
+  opacity: 0.5;
+  transition: opacity 0.3s var(--ease);
 }
-.lang-switch::after { content: none; }
-.lang-switch:hover { opacity: 0.75; }
+.lang-pill.is-active { opacity: 1; }
+.lang-pill:hover { opacity: 0.8; }
+.lang-sep { color: var(--gold); opacity: 0.4; font-size: 0.78rem; }
 
 .music-toggle {
   display: inline-flex;
@@ -207,15 +213,27 @@ h1, h2, h3 { font-family: var(--font-display); font-weight: 600; line-height: 1.
   height: 34px;
   border-radius: 50%;
   border: 1px solid currentColor;
-  color: rgba(244, 237, 227, 0.88);
-  transition: color 0.3s var(--ease), opacity 0.3s var(--ease);
+  color: var(--gold);
+  transition: opacity 0.3s var(--ease);
 }
 .music-toggle svg { width: 15px; height: 15px; }
 .music-toggle .icon-muted { display: none; }
 .music-toggle.is-muted .icon-unmuted { display: none; }
 .music-toggle.is-muted .icon-muted { display: block; }
 .music-toggle:hover { opacity: 0.75; }
-.site-header.scrolled .music-toggle { color: var(--ink); }
+
+.music-toggle--float {
+  position: fixed;
+  right: 22px;
+  bottom: 22px;
+  z-index: 90;
+  width: 50px;
+  height: 50px;
+  background: var(--maroon-deep);
+  box-shadow: 0 10px 26px -10px rgba(0, 0, 0, 0.5);
+}
+.music-toggle--float svg { width: 20px; height: 20px; }
+body.nav-open .music-toggle--float { opacity: 0; pointer-events: none; }
 
 .nav-toggle {
   display: none;
@@ -592,8 +610,10 @@ h1, h2, h3 { font-family: var(--font-display); font-weight: 600; line-height: 1.
   .nav-panel-brand {
     display: flex;
     align-items: center;
+    justify-content: space-between;
     height: var(--header-h);
     gap: 10px;
+    padding-right: 44px;
     margin-bottom: 36px;
   }
 
@@ -614,17 +634,6 @@ h1, h2, h3 { font-family: var(--font-display); font-weight: 600; line-height: 1.
 
   .nav-cta { justify-content: center; margin-top: 32px; }
   .nav-toggle { display: flex; }
-
-  .main-nav .nav-link.lang-switch {
-    display: inline-flex;
-    width: auto;
-    margin-top: 20px;
-    padding: 6px 16px !important;
-    font-size: 0.85rem;
-    border-bottom: none;
-  }
-
-  .main-nav .music-toggle { margin-top: 20px; }
 }
 
 @media (min-width: 1100px) {

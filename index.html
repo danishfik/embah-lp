@@ -3,6 +3,13 @@
 <head>
   <meta charset="UTF-8" />
   <script>
+    // Always start at the top on refresh/navigation instead of the browser
+    // restoring the previous scroll position.
+    if ('scrollRestoration' in history) {
+      history.scrollRestoration = 'manual';
+    }
+  </script>
+  <script>
     // Redirect returning visitors to their remembered language, before first paint.
     (function () {
       try {
@@ -59,46 +66,54 @@
           <li><a href="#services" class="nav-link" data-i18n="navServices">Services</a></li>
           <li><a href="#process" class="nav-link" data-i18n="navProcess">How to order</a></li>
           <li><a href="#review" class="nav-link" data-i18n="navReview">Reviews</a></li>
-          <li><a href="./bm/" class="nav-link lang-switch" data-i18n="langSwitchLabel" data-i18n-attr="href:langSwitchHref;data-lang-switch:langSwitchTarget" data-lang-switch="bm">BM</a></li>
-          <li>
-            <button type="button" class="music-toggle" data-music-toggle aria-pressed="false" aria-label="Play background music" data-i18n-attr="aria-label:musicToggleLabel">
-              <svg class="icon-unmuted" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9v6h4l5 5V4L8 9H4Z" fill="currentColor"/><path d="M16.5 8.5a5 5 0 0 1 0 7" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/><path d="M19 6a8 8 0 0 1 0 12" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
-              <svg class="icon-muted" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9v6h4l5 5V4L8 9H4Z" fill="currentColor"/><path d="M16 9l5 6M21 9l-5 6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
-            </button>
-          </li>
         </ul>
       </div>
 
-      <nav class="main-nav" id="mainNav">
-        <div class="nav-panel">
-          <div class="nav-panel-brand">
-            <img src="/src/assets/embah-logo-no-bg.webp" alt="Embah logo" class="brand-mark" />
+      <div class="header-right">
+        <div class="header-controls">
+          <div class="lang-toggle">
+            <a href="/" class="lang-pill is-active" data-lang-switch="en" aria-current="page" data-i18n-attr="href:langEnHref;class:langEnClass;aria-current:langEnCurrent">EN</a>
+            <span class="lang-sep" aria-hidden="true">|</span>
+            <a href="./bm/" class="lang-pill" data-lang-switch="bm" aria-current="false" data-i18n-attr="href:langBmHref;class:langBmClass;aria-current:langBmCurrent">BM</a>
           </div>
-          <ul>
-            <li><a href="#about" class="nav-link" data-i18n="navAbout">About</a></li>
-            <li><a href="#services" class="nav-link" data-i18n="navServices">Services</a></li>
-            <li><a href="#process" class="nav-link" data-i18n="navProcess">How to order</a></li>
-            <li><a href="#review" class="nav-link" data-i18n="navFeedback">Feedback</a></li>
-            <li><a href="./bm/" class="nav-link lang-switch" data-i18n="langSwitchLabel" data-i18n-attr="href:langSwitchHref;data-lang-switch:langSwitchTarget" data-lang-switch="bm">BM</a></li>
-            <li>
-              <button type="button" class="music-toggle" data-music-toggle aria-pressed="false" aria-label="Play background music" data-i18n-attr="aria-label:musicToggleLabel">
-                <svg class="icon-unmuted" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9v6h4l5 5V4L8 9H4Z" fill="currentColor"/><path d="M16.5 8.5a5 5 0 0 1 0 7" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/><path d="M19 6a8 8 0 0 1 0 12" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
-                <svg class="icon-muted" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9v6h4l5 5V4L8 9H4Z" fill="currentColor"/><path d="M16 9l5 6M21 9l-5 6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
-              </button>
-            </li>
-          </ul>
-          <a href="https://wa.me/0129501589?text=Hi%20Embah%2C%20saya%20nak%20order." target="_blank" rel="noopener" class="btn btn-primary nav-cta">
-            <span class="btn-icon" data-icon="whatsapp"></span>
-            <span data-i18n="contactEmbah">Contact Embah</span>
-          </a>
         </div>
-      </nav>
 
-      <button class="nav-toggle" id="navToggle" aria-label="Toggle menu" data-i18n-attr="aria-label:navToggleLabel" aria-expanded="false" aria-controls="mainNav">
-        <span></span><span></span><span></span>
-      </button>
+        <nav class="main-nav" id="mainNav">
+          <div class="nav-panel">
+            <div class="nav-panel-brand">
+              <img src="/src/assets/embah-logo-no-bg.webp" alt="Embah logo" class="brand-mark" />
+              <div class="header-controls">
+                <div class="lang-toggle">
+                  <a href="/" class="lang-pill is-active" data-lang-switch="en" aria-current="page" data-i18n-attr="href:langEnHref;class:langEnClass;aria-current:langEnCurrent">EN</a>
+                  <span class="lang-sep" aria-hidden="true">|</span>
+                  <a href="./bm/" class="lang-pill" data-lang-switch="bm" aria-current="false" data-i18n-attr="href:langBmHref;class:langBmClass;aria-current:langBmCurrent">BM</a>
+                </div>
+              </div>
+            </div>
+            <ul>
+              <li><a href="#about" class="nav-link" data-i18n="navAbout">About</a></li>
+              <li><a href="#services" class="nav-link" data-i18n="navServices">Services</a></li>
+              <li><a href="#process" class="nav-link" data-i18n="navProcess">How to order</a></li>
+              <li><a href="#review" class="nav-link" data-i18n="navFeedback">Reviews</a></li>
+            </ul>
+            <a href="https://wa.me/0129501589?text=Hi%20Embah%2C%20saya%20nak%20order." target="_blank" rel="noopener" class="btn btn-primary nav-cta">
+              <span class="btn-icon" data-icon="whatsapp"></span>
+              <span data-i18n="contactEmbah">Contact Embah</span>
+            </a>
+          </div>
+        </nav>
+
+        <button class="nav-toggle" id="navToggle" aria-label="Toggle menu" data-i18n-attr="aria-label:navToggleLabel" aria-expanded="false" aria-controls="mainNav">
+          <span></span><span></span><span></span>
+        </button>
+      </div>
     </div>
   </header>
+
+  <button type="button" class="music-toggle music-toggle--float" data-music-toggle aria-pressed="false" aria-label="Play background music" data-i18n-attr="aria-label:musicToggleLabel">
+    <svg class="icon-unmuted" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9v6h4l5 5V4L8 9H4Z" fill="currentColor"/><path d="M16.5 8.5a5 5 0 0 1 0 7" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/><path d="M19 6a8 8 0 0 1 0 12" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+    <svg class="icon-muted" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9v6h4l5 5V4L8 9H4Z" fill="currentColor"/><path d="M16 9l5 6M21 9l-5 6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+  </button>
 
   <main>
     <!-- ===== HERO ===== -->
@@ -322,7 +337,7 @@
         <div class="social-links">
           <!-- <a href="#" aria-label="Instagram" data-icon="instagram"></a> -->
           <a href="https://wa.me/0129501589?text=Hi%20Embah%2C%20saya%20nak%20order." target="_blank" rel="noopener" aria-label="WhatsApp" data-icon="whatsapp"></a>
-          <a href="#" aria-label="Facebook" data-icon="facebook"></a>
+          <a href="https://www.facebook.com/share/19L4bWEwXr/?mibextid=wwXIfr" target="_blank" rel="noopener" aria-label="Facebook" data-icon="facebook"></a>
         </div>
       </div>
 
@@ -331,16 +346,17 @@
         <ul>
           <li><a href="#about" data-i18n="navAbout">About</a></li>
           <li><a href="#services" data-i18n="navServices">Services</a></li>
-          <li><a href="#review" data-i18n="navFeedback">Feedback</a></li>
+          <li><a href="#process" data-i18n="navProcess">How to order</a></li>
+          <li><a href="#review" data-i18n="navFeedback">Reviews</a></li>
         </ul>
       </div>
 
       <div class="footer-col">
         <h4 data-i18n="footerServicesHeading">Services</h4>
         <ul>
-          <li data-i18n="service1Title">Lunch &amp; Dinner Orders</li>
-          <li data-i18n="service2Title">Event Packages</li>
-          <li data-i18n="service3Title">Catering</li>
+          <li><a href="#services" data-i18n="service1Title">Lunch &amp; Dinner Orders</a></li>
+          <li><a href="#services" data-i18n="service2Title">Event Packages</a></li>
+          <li><a href="#services" data-i18n="service3Title">Catering</a></li>
         </ul>
       </div>
 
@@ -348,7 +364,7 @@
         <h4 data-i18n="footerContactHeading">Contact</h4>
         <ul>
           <li>Ipoh, Perak, Malaysia</li>
-          <li><a href="tel:+0129501589">+60 17-448 8027</a></li>
+          <li><a href="tel:+0129501589">+60 12-950 1589</a></li>
         </ul>
       </div>
     </div>

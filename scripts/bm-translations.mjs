@@ -19,9 +19,12 @@ export const translations = {
   musicToggleLabel: 'Mainkan muzik latar',
   contactEmbah: 'Hubungi Embah',
 
-  langSwitchLabel: 'EN',
-  langSwitchHref: '../',
-  langSwitchTarget: 'en',
+  langEnHref: '../',
+  langEnClass: 'lang-pill',
+  langEnCurrent: 'false',
+  langBmHref: './',
+  langBmClass: 'lang-pill is-active',
+  langBmCurrent: 'page',
 
   heroLine1: 'Dari Dapur Kami,',
   heroLine2: 'Ke Meja Anda.',
