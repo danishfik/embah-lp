@@ -140,5 +140,58 @@ if (statNumbers.length) {
   }
 }
 
+/* ============ ABOUT PHOTO CROSSFADE ============ */
+const aboutPhotos = gsap.utils.toArray<HTMLElement>('.about-photo');
+if (aboutPhotos.length > 1) {
+  let aboutIndex = Math.max(
+    aboutPhotos.findIndex((photo) => photo.classList.contains('is-active')),
+    0
+  );
+  window.setInterval(() => {
+    aboutPhotos[aboutIndex].classList.remove('is-active');
+    aboutIndex = (aboutIndex + 1) % aboutPhotos.length;
+    aboutPhotos[aboutIndex].classList.add('is-active');
+  }, 6000);
+}
+
+/* ============ FEEDBACK CAROUSEL ============ */
+const feedbackSlides = gsap.utils.toArray<HTMLElement>('.feedback-slide');
+const feedbackDots = gsap.utils.toArray<HTMLElement>('.feedback-dot');
+if (feedbackSlides.length) {
+  let activeIndex = Math.max(
+    feedbackSlides.findIndex((slide) => slide.classList.contains('is-active')),
+    0
+  );
+  let timer: number;
+
+  const goToSlide = (index: number) => {
+    const nextIndex = (index + feedbackSlides.length) % feedbackSlides.length;
+    if (nextIndex === activeIndex) return;
+    feedbackSlides[activeIndex].classList.remove('is-active');
+    feedbackDots[activeIndex]?.classList.remove('is-active');
+    activeIndex = nextIndex;
+    feedbackSlides[activeIndex].classList.add('is-active');
+    feedbackDots[activeIndex]?.classList.add('is-active');
+  };
+
+  const startAutoplay = () => {
+    window.clearInterval(timer);
+    timer = window.setInterval(() => goToSlide(activeIndex + 1), 5000);
+  };
+
+  feedbackDots.forEach((dot, index) => {
+    dot.addEventListener('click', () => {
+      goToSlide(index);
+      startAutoplay();
+    });
+  });
+
+  const feedbackSlider = document.querySelector<HTMLElement>('.feedback-slider')!;
+  feedbackSlider.addEventListener('mouseenter', () => window.clearInterval(timer));
+  feedbackSlider.addEventListener('mouseleave', startAutoplay);
+
+  startAutoplay();
+}
+
 /* ============ REFRESH ON LOAD (fonts / images can shift layout) ============ */
 window.addEventListener('load', () => ScrollTrigger.refresh());
