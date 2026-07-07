@@ -211,12 +211,11 @@ h1, h2, h3 { font-family: var(--font-display); font-weight: 600; line-height: 1.
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
   background: radial-gradient(120% 100% at 50% 0%, var(--maroon-soft) 0%, var(--maroon) 45%, var(--maroon-deep) 100%);
   color: var(--cream);
   text-align: center;
   overflow: hidden;
-  padding-top: 12px;
+  padding: 12px 0 28px;
 }
 .hero-pattern {
   position: absolute;
@@ -227,7 +226,7 @@ h1, h2, h3 { font-family: var(--font-display); font-weight: 600; line-height: 1.
   background-size: 28px 28px;
   will-change: transform;
 }
-.hero-inner { position: relative; z-index: 1; display: flex; flex-direction: column; align-items: center; }
+.hero-inner { position: relative; z-index: 1; display: flex; flex-direction: column; align-items: center; margin: auto 0; }
 
 .hero-logo { width: clamp(160px, 35vw, 640px); margin-bottom: 18px; }
 
@@ -251,9 +250,8 @@ h1, h2, h3 { font-family: var(--font-display); font-weight: 600; line-height: 1.
 .hero-actions-contact .btn-icon { width: 15px; height: 15px; }
 
 .scroll-cue {
-  position: absolute;
-  bottom: 28px; left: 50%;
-  transform: translateX(-50%);
+  position: relative;
+  z-index: 1;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -262,7 +260,8 @@ h1, h2, h3 { font-family: var(--font-display); font-weight: 600; line-height: 1.
   font-size: 0.72rem;
   letter-spacing: 0.14em;
   text-transform: uppercase;
-  z-index: 1;
+  margin-top: 32px;
+  flex-shrink: 0;
 }
 .scroll-cue i {
   width: 1px; height: 34px;
@@ -412,8 +411,11 @@ h1, h2, h3 { font-family: var(--font-display); font-weight: 600; line-height: 1.
   cursor: grab;
   user-select: none;
   -webkit-user-select: none;
+  touch-action: pan-y;
+  will-change: transform;
+  transition: transform 0.7s cubic-bezier(0.16, 1, 0.3, 1);
 }
-.feedback-track.is-dragging { cursor: grabbing; }
+.feedback-track.is-dragging { cursor: grabbing; transition: none; }
 .feedback-slide {
   position: absolute;
   inset: 0;
@@ -422,9 +424,10 @@ h1, h2, h3 { font-family: var(--font-display); font-weight: 600; line-height: 1.
   align-items: center;
   opacity: 0;
   visibility: hidden;
-  transition: opacity 0.9s var(--ease);
+  transform: translateY(14px);
+  transition: opacity 1.4s cubic-bezier(0.22, 1, 0.36, 1), transform 1.4s cubic-bezier(0.22, 1, 0.36, 1), visibility 1.4s;
 }
-.feedback-slide.is-active { position: relative; opacity: 1; visibility: visible; }
+.feedback-slide.is-active { position: relative; opacity: 1; visibility: visible; transform: translateY(0); }
 .feedback-quote-icon { width: 44px; height: 44px; color: var(--gold-dark); opacity: 0.85; margin-bottom: 22px; }
 .feedback-text { font-size: clamp(1.3rem, 2.4vw, 1.6rem); line-height: 1.5; color: var(--ink); max-width: 42ch; margin: 0 auto 28px; }
 .feedback-author { display: flex; flex-direction: column; }

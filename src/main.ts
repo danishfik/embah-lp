@@ -194,12 +194,39 @@ if (feedbackSlides.length) {
   let dragStartX = 0;
   let dragDeltaX = 0;
   let isDragging = false;
+  let dragRaf = 0;
   const swipeThreshold = 40;
+  const maxDragOffset = 60;
+
+  const dampen = (delta: number) => {
+    const sign = Math.sign(delta);
+    const abs = Math.abs(delta);
+    return sign * maxDragOffset * (1 - Math.exp(-abs / maxDragOffset));
+  };
+
+  const startDrag = (clientX: number) => {
+    isDragging = true;
+    dragStartX = clientX;
+    dragDeltaX = 0;
+    window.clearInterval(timer);
+    feedbackTrack.classList.add('is-dragging');
+  };
+
+  const updateDrag = (clientX: number) => {
+    if (!isDragging) return;
+    dragDeltaX = clientX - dragStartX;
+    cancelAnimationFrame(dragRaf);
+    dragRaf = requestAnimationFrame(() => {
+      feedbackTrack.style.transform = `translateX(${dampen(dragDeltaX)}px)`;
+    });
+  };
 
   const endDrag = () => {
     if (!isDragging) return;
     isDragging = false;
+    cancelAnimationFrame(dragRaf);
     feedbackTrack.classList.remove('is-dragging');
+    feedbackTrack.style.transform = '';
     if (dragDeltaX < -swipeThreshold) {
       goToSlide(activeIndex + 1);
     } else if (dragDeltaX > swipeThreshold) {
@@ -209,30 +236,22 @@ if (feedbackSlides.length) {
   };
 
   feedbackTrack.addEventListener('touchstart', (e) => {
-    isDragging = true;
-    dragStartX = e.touches[0].clientX;
-    dragDeltaX = 0;
-    window.clearInterval(timer);
+    startDrag(e.touches[0].clientX);
   }, { passive: true });
 
   feedbackTrack.addEventListener('touchmove', (e) => {
-    dragDeltaX = e.touches[0].clientX - dragStartX;
+    updateDrag(e.touches[0].clientX);
   }, { passive: true });
 
   feedbackTrack.addEventListener('touchend', endDrag);
 
   feedbackTrack.addEventListener('mousedown', (e) => {
-    isDragging = true;
-    dragStartX = e.clientX;
-    dragDeltaX = 0;
-    window.clearInterval(timer);
-    feedbackTrack.classList.add('is-dragging');
+    startDrag(e.clientX);
     e.preventDefault();
   });
 
   window.addEventListener('mousemove', (e) => {
-    if (!isDragging) return;
-    dragDeltaX = e.clientX - dragStartX;
+    updateDrag(e.clientX);
   });
 
   window.addEventListener('mouseup', endDrag);
