@@ -4,6 +4,7 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import whatsappIcon from 'simple-icons/icons/whatsapp.svg?raw';
 import instagramIcon from 'simple-icons/icons/instagram.svg?raw';
 import facebookIcon from 'simple-icons/icons/facebook.svg?raw';
+import tiktokIcon from 'simple-icons/icons/tiktok.svg?raw';
 import bgMusicUrl from './assets/bg-music.mp3?url';
 
 gsap.registerPlugin(ScrollTrigger);
@@ -17,6 +18,7 @@ const ICONS: Record<string, string> = {
   whatsapp: whatsappIcon,
   instagram: instagramIcon,
   facebook: facebookIcon,
+  tiktok: tiktokIcon,
 };
 document.querySelectorAll<HTMLElement>('[data-icon]').forEach((el) => {
   const icon = ICONS[el.dataset.icon ?? ''];
