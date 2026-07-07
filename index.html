@@ -21,7 +21,7 @@
   <title data-i18n="metaTitle">Embah | Homestyle Lunch, Dinner, Events &amp; Catering</title>
   <meta name="description" data-i18n-attr="content:metaDescription" content="Embah serves authentic homestyle meals - daily lunch & dinner orders, event packages, and full-scale catering, cooked fresh in small batches." />
   <meta name="theme-color" content="#4a0b0b" />
-  <link rel="icon" href="/src/assets/embah-logo-no-bg.webp" type="image/webp" />
+  <link rel="icon" href="/src/assets/embah-logo.png" type="image/webp" />
 
   <link rel="canonical" data-i18n-attr="href:canonicalUrl" href="https://embah-my.vercel.app/" />
   <link rel="alternate" hreflang="en" href="https://embah-my.vercel.app/" />
@@ -45,6 +45,7 @@
 </head>
 <body>
   <div class="noise-overlay" aria-hidden="true"></div>
+  <audio id="bgMusic" loop preload="auto"></audio>
 
   <!-- ===== HEADER / NAV ===== -->
   <header class="site-header" id="top">
@@ -59,6 +60,12 @@
           <li><a href="#process" class="nav-link" data-i18n="navProcess">How to order</a></li>
           <li><a href="#review" class="nav-link" data-i18n="navReview">Reviews</a></li>
           <li><a href="./bm/" class="nav-link lang-switch" data-i18n="langSwitchLabel" data-i18n-attr="href:langSwitchHref;data-lang-switch:langSwitchTarget" data-lang-switch="bm">BM</a></li>
+          <li>
+            <button type="button" class="music-toggle" data-music-toggle aria-pressed="false" aria-label="Play background music" data-i18n-attr="aria-label:musicToggleLabel">
+              <svg class="icon-unmuted" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9v6h4l5 5V4L8 9H4Z" fill="currentColor"/><path d="M16.5 8.5a5 5 0 0 1 0 7" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/><path d="M19 6a8 8 0 0 1 0 12" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+              <svg class="icon-muted" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9v6h4l5 5V4L8 9H4Z" fill="currentColor"/><path d="M16 9l5 6M21 9l-5 6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+            </button>
+          </li>
         </ul>
       </div>
 
@@ -73,8 +80,14 @@
             <li><a href="#process" class="nav-link" data-i18n="navProcess">How to order</a></li>
             <li><a href="#review" class="nav-link" data-i18n="navFeedback">Feedback</a></li>
             <li><a href="./bm/" class="nav-link lang-switch" data-i18n="langSwitchLabel" data-i18n-attr="href:langSwitchHref;data-lang-switch:langSwitchTarget" data-lang-switch="bm">BM</a></li>
+            <li>
+              <button type="button" class="music-toggle" data-music-toggle aria-pressed="false" aria-label="Play background music" data-i18n-attr="aria-label:musicToggleLabel">
+                <svg class="icon-unmuted" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9v6h4l5 5V4L8 9H4Z" fill="currentColor"/><path d="M16.5 8.5a5 5 0 0 1 0 7" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/><path d="M19 6a8 8 0 0 1 0 12" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+                <svg class="icon-muted" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9v6h4l5 5V4L8 9H4Z" fill="currentColor"/><path d="M16 9l5 6M21 9l-5 6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+              </button>
+            </li>
           </ul>
-          <a href="https://wa.me/60174488027?text=Hi%20Embah!%20Saya%20berminat%20nak%20tempah%20servis.%0A%0ATarikh%3A%20%0APax%3A%20%0AMakanan%3A%20%0ALokasi%3A%20%0A%0ATerima%20kasih!" target="_blank" rel="noopener" class="btn btn-primary nav-cta">
+          <a href="https://wa.me/0129501589?text=Hi%20Embah%2C%20saya%20nak%20order." target="_blank" rel="noopener" class="btn btn-primary nav-cta">
             <span class="btn-icon" data-icon="whatsapp"></span>
             <span data-i18n="contactEmbah">Contact Embah</span>
           </a>
@@ -104,7 +117,7 @@
           orders to unforgettable events and catering, all prepared fresh in small batches.
         </p>
         <div class="hero-actions-contact" data-hero-el>
-          <a href="https://wa.me/60174488027?text=Hi%20Embah!%20Saya%20berminat%20nak%20tempah%20servis.%0A%0ATarikh%3A%20%0APax%3A%20%0AMakanan%3A%20%0ALokasi%3A%20%0A%0ATerima%20kasih!" target="_blank" rel="noopener" class="btn btn-primary">
+          <a href="https://wa.me/0129501589?text=Hi%20Embah%2C%20saya%20nak%20order." target="_blank" rel="noopener" class="btn btn-primary">
             <span class="btn-icon" data-icon="whatsapp"></span>
             <span data-i18n="contactEmbah">Contact Embah</span>
           </a>
@@ -119,6 +132,10 @@
     <!-- ===== ABOUT ===== -->
     <section class="about" id="about">
       <div class="container about-grid">
+        <div class="about-header">
+          <p class="eyebrow" data-reveal data-i18n="aboutEyebrow">Our Story</p>
+          <h2 data-reveal data-i18n="aboutHeading">A Recipe Passed Down, <br />A Kitchen Built on Care</h2>
+        </div>
         <div class="about-visual" data-reveal>
           <div class="about-photo-stack">
             <img src="/src/assets/embah-4.webp" alt="Embah homestyle rice plate with sides, laid out with fresh ingredients" class="about-photo is-active" />
@@ -126,8 +143,6 @@
           </div>
         </div>
         <div class="about-copy">
-          <p class="eyebrow" data-reveal data-i18n="aboutEyebrow">Our Story</p>
-          <h2 data-reveal data-i18n="aboutHeading">A Recipe Passed Down, <br />A Kitchen Built on Care</h2>
           <p class="body-text" data-reveal data-i18n="aboutBody1">
             In Javanese tradition, <em>Embah</em> means grandparent - the elder whose kitchen
             was always warm, whose recipes were never written down, only remembered and
@@ -174,7 +189,7 @@
             <h3 data-i18n="service1Title">Lunch &amp; Dinner Orders</h3>
             <p data-i18n="service1Body">Daily home-cooked meals, made to order in small batches so every plate
               arrives fresh - perfect for busy weekdays or a comforting night in.</p>
-            <a href="https://wa.me/60174488027?text=Hi%20Embah!%20Saya%20berminat%20nak%20tempah%20servis.%0A%0ATarikh%3A%20%0APax%3A%20%0AMakanan%3A%20%0ALokasi%3A%20%0A%0ATerima%20kasih!" target="_blank" rel="noopener" class="card-link" data-i18n="service1Link">Order for today &rarr;</a>
+            <a href="https://wa.me/0129501589?text=Hi%20Embah%2C%20saya%20nak%20order." target="_blank" rel="noopener" class="card-link" data-i18n="service1Link">Order for today &rarr;</a>
           </article>
 
           <article class="service-card service-card--featured">
@@ -184,7 +199,7 @@
             <h3 data-i18n="service2Title">Event Packages</h3>
             <p data-i18n="service2Body">Birthdays, family gatherings, small celebrations - we bring a full
               homestyle spread tailored to your occasion and guest count.</p>
-            <a href="https://wa.me/60174488027?text=Hi%20Embah!%20Saya%20berminat%20nak%20tempah%20servis.%0A%0ATarikh%3A%20%0APax%3A%20%0AMakanan%3A%20%0ALokasi%3A%20%0A%0ATerima%20kasih!" target="_blank" rel="noopener" class="card-link" data-i18n="service2Link">Plan your event &rarr;</a>
+            <a href="https://wa.me/0129501589?text=Hi%20Embah%2C%20saya%20nak%20order." target="_blank" rel="noopener" class="card-link" data-i18n="service2Link">Plan your event &rarr;</a>
           </article>
 
           <article class="service-card">
@@ -194,7 +209,7 @@
             <h3 data-i18n="service3Title">Catering</h3>
             <p data-i18n="service3Body">Large-scale catering for weddings, corporate events, and special
               occasions - consistent quality and reliable service, every time.</p>
-            <a href="https://wa.me/60174488027?text=Hi%20Embah!%20Saya%20berminat%20nak%20tempah%20servis.%0A%0ATarikh%3A%20%0APax%3A%20%0AMakanan%3A%20%0ALokasi%3A%20%0A%0ATerima%20kasih!" target="_blank" rel="noopener" class="card-link" data-i18n="service3Link">Request a quote &rarr;</a>
+            <a href="https://wa.me/0129501589?text=Hi%20Embah%2C%20saya%20nak%20order." target="_blank" rel="noopener" class="card-link" data-i18n="service3Link">Request a quote &rarr;</a>
           </article>
         </div>
       </div>
@@ -289,7 +304,7 @@
           packages - we'll help you plan the details.
         </p>
         <div class="cta-actions" data-reveal>
-          <a href="https://wa.me/60174488027?text=Hi%20Embah!%20Saya%20berminat%20nak%20tempah%20servis.%0A%0ATarikh%3A%20%0APax%3A%20%0AMakanan%3A%20%0ALokasi%3A%20%0A%0ATerima%20kasih!" target="_blank" rel="noopener" class="btn btn-primary">
+          <a href="https://wa.me/0129501589?text=Hi%20Embah%2C%20saya%20nak%20order." target="_blank" rel="noopener" class="btn btn-primary">
             <span class="btn-icon" data-icon="whatsapp"></span>
             <span data-i18n="ctaButton">Chat on WhatsApp</span>
           </a>
@@ -306,7 +321,7 @@
         <p data-i18n="footerTagline">Homestyle lunch &amp; dinner, events, and catering. Cooked fresh, always with care.</p>
         <div class="social-links">
           <!-- <a href="#" aria-label="Instagram" data-icon="instagram"></a> -->
-          <a href="https://wa.me/60174488027?text=Hi%20Embah!%20Saya%20berminat%20nak%20tempah%20servis.%0A%0ATarikh%3A%20%0APax%3A%20%0AMakanan%3A%20%0ALokasi%3A%20%0A%0ATerima%20kasih!" target="_blank" rel="noopener" aria-label="WhatsApp" data-icon="whatsapp"></a>
+          <a href="https://wa.me/0129501589?text=Hi%20Embah%2C%20saya%20nak%20order." target="_blank" rel="noopener" aria-label="WhatsApp" data-icon="whatsapp"></a>
           <a href="#" aria-label="Facebook" data-icon="facebook"></a>
         </div>
       </div>
@@ -333,7 +348,7 @@
         <h4 data-i18n="footerContactHeading">Contact</h4>
         <ul>
           <li>Ipoh, Perak, Malaysia</li>
-          <li><a href="tel:+60174488027">+60 17-448 8027</a></li>
+          <li><a href="tel:+0129501589">+60 17-448 8027</a></li>
         </ul>
       </div>
     </div>

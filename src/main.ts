@@ -4,6 +4,7 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import whatsappIcon from 'simple-icons/icons/whatsapp.svg?raw';
 import instagramIcon from 'simple-icons/icons/instagram.svg?raw';
 import facebookIcon from 'simple-icons/icons/facebook.svg?raw';
+import bgMusicUrl from './assets/bg-music.mp3?url';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -21,6 +22,54 @@ document.querySelectorAll<HTMLElement>('[data-icon]').forEach((el) => {
   const icon = ICONS[el.dataset.icon ?? ''];
   if (icon) el.insertAdjacentHTML('afterbegin', icon);
 });
+
+/* ============ LANGUAGE SWITCH ============ */
+// Remember the visitor's deliberate choice so the inline redirect script in
+// <head> can send them straight to it on their next visit.
+document.querySelectorAll<HTMLElement>('[data-lang-switch]').forEach((el) => {
+  el.addEventListener('click', () => {
+    try {
+      localStorage.setItem('embah:lang', el.dataset.langSwitch ?? '');
+    } catch {
+      // localStorage unavailable (private browsing, etc.) - navigation still works.
+    }
+  });
+});
+
+/* ============ BACKGROUND MUSIC ============ */
+// Autoplay-with-sound is blocked by browsers without a user gesture, so the
+// track always starts muted; clicking the toggle is the gesture that unmutes it.
+const bgMusic = document.getElementById('bgMusic') as HTMLAudioElement | null;
+const musicToggles = document.querySelectorAll<HTMLButtonElement>('[data-music-toggle]');
+if (bgMusic && musicToggles.length) {
+  bgMusic.src = bgMusicUrl;
+
+  const isBm = location.pathname.includes('/bm/');
+  const actionLabel = (isMuted: boolean) =>
+    isMuted
+      ? (isBm ? 'Mainkan muzik latar' : 'Play background music')
+      : (isBm ? 'Senyapkan muzik latar' : 'Mute background music');
+
+  const syncToggles = (isMuted: boolean) => {
+    musicToggles.forEach((btn) => {
+      btn.classList.toggle('is-muted', isMuted);
+      btn.setAttribute('aria-pressed', String(!isMuted));
+      btn.setAttribute('aria-label', actionLabel(isMuted));
+    });
+  };
+
+  bgMusic.muted = true;
+  syncToggles(true);
+  bgMusic.play().catch(() => {});
+
+  musicToggles.forEach((btn) => {
+    btn.addEventListener('click', () => {
+      bgMusic.muted = !bgMusic.muted;
+      if (!bgMusic.muted) bgMusic.play().catch(() => {});
+      syncToggles(bgMusic.muted);
+    });
+  });
+}
 
 /* ============ HEADER: scrolled state + mobile nav ============ */
 const header = document.querySelector<HTMLElement>('.site-header')!;
@@ -157,21 +206,68 @@ if (aboutPhotos.length > 1) {
 /* ============ FEEDBACK CAROUSEL ============ */
 const feedbackSlides = gsap.utils.toArray<HTMLElement>('.feedback-slide');
 const feedbackDots = gsap.utils.toArray<HTMLElement>('.feedback-dot');
-if (feedbackSlides.length) {
+if (feedbackSlides.length > 1) {
+  const feedbackSlider = document.querySelector<HTMLElement>('.feedback-slider')!;
+  const feedbackTrack = document.querySelector<HTMLElement>('.feedback-track')!;
+  const realCount = feedbackSlides.length;
+  const totalPositions = realCount + 2;
+
+  // Clone the first/last slide onto the opposite ends of the strip so dragging
+  // past an edge reveals a real-looking neighbor instead of cutting to blank
+  // space. The clone is swapped for the true slide (invisibly) once it settles.
+  const firstClone = feedbackSlides[0].cloneNode(true) as HTMLElement;
+  const lastClone = feedbackSlides[realCount - 1].cloneNode(true) as HTMLElement;
+  firstClone.setAttribute('aria-hidden', 'true');
+  lastClone.setAttribute('aria-hidden', 'true');
+  feedbackTrack.insertBefore(lastClone, feedbackSlides[0]);
+  feedbackTrack.appendChild(firstClone);
+
   let activeIndex = Math.max(
     feedbackSlides.findIndex((slide) => slide.classList.contains('is-active')),
     0
   );
+  let posIndex = activeIndex + 1;
   let timer: number;
+  let slideWidth = feedbackTrack.clientWidth;
+
+  const setTransform = (pos: number, offsetPx = 0, animate = true) => {
+    if (!animate) feedbackTrack.classList.add('is-dragging');
+    feedbackTrack.style.transform = `translateX(${-pos * slideWidth + offsetPx}px)`;
+    if (!animate) {
+      void feedbackTrack.offsetWidth;
+      feedbackTrack.classList.remove('is-dragging');
+    }
+  };
+
+  const setActive = (index: number) => {
+    feedbackSlides[activeIndex]?.classList.remove('is-active');
+    feedbackSlides[activeIndex]?.setAttribute('aria-hidden', 'true');
+    feedbackDots[activeIndex]?.classList.remove('is-active');
+    activeIndex = index;
+    feedbackSlides[activeIndex]?.classList.add('is-active');
+    feedbackSlides[activeIndex]?.setAttribute('aria-hidden', 'false');
+    feedbackDots[activeIndex]?.classList.add('is-active');
+  };
+
+  // After a snap lands on a cloned end slot, jump the real position across
+  // instantly (clone and the real slide are pixel-identical, so it's invisible).
+  feedbackTrack.addEventListener('transitionend', (e) => {
+    if (e.propertyName !== 'transform') return;
+    if (posIndex === 0) {
+      posIndex = realCount;
+      setTransform(posIndex, 0, false);
+    } else if (posIndex === realCount + 1) {
+      posIndex = 1;
+      setTransform(posIndex, 0, false);
+    }
+  });
 
   const goToSlide = (index: number) => {
-    const nextIndex = (index + feedbackSlides.length) % feedbackSlides.length;
+    const nextIndex = (index + realCount) % realCount;
     if (nextIndex === activeIndex) return;
-    feedbackSlides[activeIndex].classList.remove('is-active');
-    feedbackDots[activeIndex]?.classList.remove('is-active');
-    activeIndex = nextIndex;
-    feedbackSlides[activeIndex].classList.add('is-active');
-    feedbackDots[activeIndex]?.classList.add('is-active');
+    setActive(nextIndex);
+    posIndex = activeIndex + 1;
+    setTransform(posIndex);
   };
 
   const startAutoplay = () => {
@@ -186,22 +282,23 @@ if (feedbackSlides.length) {
     });
   });
 
-  const feedbackSlider = document.querySelector<HTMLElement>('.feedback-slider')!;
-  const feedbackTrack = document.querySelector<HTMLElement>('.feedback-track')!;
   feedbackSlider.addEventListener('mouseenter', () => window.clearInterval(timer));
   feedbackSlider.addEventListener('mouseleave', startAutoplay);
+
+  window.addEventListener('resize', () => {
+    slideWidth = feedbackTrack.clientWidth;
+    if (!isDragging) setTransform(posIndex, 0, false);
+  });
 
   let dragStartX = 0;
   let dragDeltaX = 0;
   let isDragging = false;
-  let dragRaf = 0;
-  const swipeThreshold = 40;
-  const maxDragOffset = 60;
+  const maxEdgeOvershoot = 60;
 
-  const dampen = (delta: number) => {
+  const dampenEdge = (delta: number) => {
     const sign = Math.sign(delta);
     const abs = Math.abs(delta);
-    return sign * maxDragOffset * (1 - Math.exp(-abs / maxDragOffset));
+    return sign * maxEdgeOvershoot * (1 - Math.exp(-abs / maxEdgeOvershoot));
   };
 
   const startDrag = (clientX: number) => {
@@ -215,23 +312,36 @@ if (feedbackSlides.length) {
   const updateDrag = (clientX: number) => {
     if (!isDragging) return;
     dragDeltaX = clientX - dragStartX;
-    cancelAnimationFrame(dragRaf);
-    dragRaf = requestAnimationFrame(() => {
-      feedbackTrack.style.transform = `translateX(${dampen(dragDeltaX)}px)`;
-    });
+
+    const baseX = -posIndex * slideWidth;
+    const minX = -(totalPositions - 1) * slideWidth;
+    const maxX = 0;
+    let x = baseX + dragDeltaX;
+    if (x > maxX) x = maxX + dampenEdge(x - maxX);
+    else if (x < minX) x = minX + dampenEdge(x - minX);
+
+    feedbackTrack.style.transform = `translateX(${x}px)`;
+
+    // Keep the dots (and aria-hidden state) synced live with whichever slide
+    // is currently nearest to center, instead of only updating on release.
+    const liveStep = Math.round(-dragDeltaX / slideWidth);
+    const livePos = Math.min(totalPositions - 1, Math.max(0, posIndex + liveStep));
+    const liveRealIndex = ((livePos - 1) + realCount) % realCount;
+    if (liveRealIndex !== activeIndex) setActive(liveRealIndex);
   };
 
   const endDrag = () => {
     if (!isDragging) return;
     isDragging = false;
-    cancelAnimationFrame(dragRaf);
     feedbackTrack.classList.remove('is-dragging');
-    feedbackTrack.style.transform = '';
-    if (dragDeltaX < -swipeThreshold) {
-      goToSlide(activeIndex + 1);
-    } else if (dragDeltaX > swipeThreshold) {
-      goToSlide(activeIndex - 1);
-    }
+
+    const rawSteps = Math.round(-dragDeltaX / slideWidth);
+    posIndex = Math.min(totalPositions - 1, Math.max(0, posIndex + rawSteps));
+    setTransform(posIndex);
+
+    const realEquivIndex = ((posIndex - 1) + realCount) % realCount;
+    if (realEquivIndex !== activeIndex) setActive(realEquivIndex);
+
     startAutoplay();
   };
 
@@ -256,6 +366,7 @@ if (feedbackSlides.length) {
 
   window.addEventListener('mouseup', endDrag);
 
+  setTransform(posIndex, 0, false);
   startAutoplay();
 }
 
