@@ -85,11 +85,19 @@ if (bgMusic && musicToggles.length) {
   // reading .muted back would tell the toggle button the wrong current state.
   let isMuted = true;
 
-  const tryPlay = async (muted: boolean) => {
-    // iOS routes bgMusic's output through audioCtx (see GainNode setup above),
-    // so playback is silent - despite play() resolving - if it starts before
-    // the context has actually left its gesture-gated "suspended" state.
-    await audioCtx?.resume();
+  // isGesture controls whether we wait for audioCtx to resume before playing:
+  // - true (button click / first tap): resume() is gesture-gated and resolves
+  //   almost instantly, so we await it - otherwise iOS starts bgMusic before
+  //   the context leaves "suspended" and play() resolves with no sound at all.
+  // - false (the opportunistic attempt at page load, before any gesture):
+  //   resume() has nothing to unlock it and can hang indefinitely, so we fire
+  //   it and move on rather than block the fallback listeners below forever.
+  const tryPlay = async (muted: boolean, isGesture: boolean) => {
+    if (isGesture) {
+      await audioCtx?.resume();
+    } else {
+      void audioCtx?.resume();
+    }
     bgMusic.muted = muted;
     try {
       await bgMusic.play();
@@ -101,7 +109,7 @@ if (bgMusic && musicToggles.length) {
     }
   };
 
-  tryPlay(false).then((started) => {
+  tryPlay(false, false).then((started) => {
     if (started) return;
     // True unmuted autoplay is blocked without a user gesture (this is a
     // hard platform restriction, especially on iOS), so arm a one-time
@@ -113,7 +121,7 @@ if (bgMusic && musicToggles.length) {
     // the visitor should never see a state implying we chose to mute them.
     const startOnFirstGesture = (e: Event) => {
       if ((e.target as HTMLElement | null)?.closest('[data-music-toggle]')) return;
-      tryPlay(false);
+      tryPlay(false, true);
     };
     document.addEventListener('pointerdown', startOnFirstGesture, { once: true });
     document.addEventListener('keydown', startOnFirstGesture, { once: true });
@@ -121,7 +129,7 @@ if (bgMusic && musicToggles.length) {
 
   musicToggles.forEach((btn) => {
     btn.addEventListener('click', () => {
-      tryPlay(!isMuted);
+      tryPlay(!isMuted, true);
     });
   });
 }
