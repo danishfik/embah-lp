@@ -125,14 +125,20 @@ if (bgMusic && musicToggles.length) {
     // browsers only treat the "release" events as genuine user activation for
     // granting audio permissions, so arming this on the "press" events instead
     // fires the handler without actually unlocking anything on stricter engines.
-    // A single tap fires both touchend and click, so guard against running
-    // this twice instead of relying on { once: true } per listener.
+    //
+    // touchend also fires at the end of a scroll/swipe, not just a tap, but a
+    // scroll-ending touch doesn't necessarily carry real audio permission from
+    // the browser - so don't disarm until a tryPlay attempt actually succeeds,
+    // otherwise a scroll can burn the listener and leave nothing armed for the
+    // visitor's next real tap.
     const startOnFirstGesture = (e: Event) => {
       if ((e.target as HTMLElement | null)?.closest('[data-music-toggle]')) return;
-      document.removeEventListener('click', startOnFirstGesture);
-      document.removeEventListener('touchend', startOnFirstGesture);
-      document.removeEventListener('keyup', startOnFirstGesture);
-      tryPlay(false);
+      tryPlay(false).then((played) => {
+        if (!played) return;
+        document.removeEventListener('click', startOnFirstGesture);
+        document.removeEventListener('touchend', startOnFirstGesture);
+        document.removeEventListener('keyup', startOnFirstGesture);
+      });
     };
     document.addEventListener('click', startOnFirstGesture);
     document.addEventListener('touchend', startOnFirstGesture);
