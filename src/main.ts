@@ -85,23 +85,32 @@ if (bgMusic && musicToggles.length) {
   // reading .muted back would tell the toggle button the wrong current state.
   let isMuted = true;
 
-  const tryPlay = (muted: boolean) => {
-    void audioCtx?.resume();
+  const tryPlay = async (muted: boolean) => {
+    // iOS routes bgMusic's output through audioCtx (see GainNode setup above),
+    // so playback is silent - despite play() resolving - if it starts before
+    // the context has actually left its gesture-gated "suspended" state.
+    await audioCtx?.resume();
     bgMusic.muted = muted;
-    return bgMusic.play().then(
-      () => { isMuted = muted; syncToggles(muted); return true; },
-      () => false
-    );
+    try {
+      await bgMusic.play();
+      isMuted = muted;
+      syncToggles(muted);
+      return true;
+    } catch {
+      return false;
+    }
   };
 
   tryPlay(false).then((started) => {
     if (started) return;
-    syncToggles(true);
     // True unmuted autoplay is blocked without a user gesture (this is a
     // hard platform restriction, especially on iOS), so arm a one-time
     // listener that starts real playback on the visitor's very first
     // interaction anywhere on the page - sound plays by default rather
     // than requiring them to find the dedicated toggle button first.
+    // Deliberately leave the toggle showing its default "sound on" icon
+    // (see index.html) in the meantime instead of flipping it to muted -
+    // the visitor should never see a state implying we chose to mute them.
     const startOnFirstGesture = (e: Event) => {
       if ((e.target as HTMLElement | null)?.closest('[data-music-toggle]')) return;
       tryPlay(false);
