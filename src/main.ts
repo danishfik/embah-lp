@@ -120,12 +120,23 @@ if (bgMusic && musicToggles.length) {
     // Deliberately leave the toggle showing its default "sound on" icon
     // (see index.html) in the meantime instead of flipping it to muted -
     // the visitor should never see a state implying we chose to mute them.
+    //
+    // Listen on click/touchend/keyup specifically, not pointerdown/keydown -
+    // browsers only treat the "release" events as genuine user activation for
+    // granting audio permissions, so arming this on the "press" events instead
+    // fires the handler without actually unlocking anything on stricter engines.
+    // A single tap fires both touchend and click, so guard against running
+    // this twice instead of relying on { once: true } per listener.
     const startOnFirstGesture = (e: Event) => {
       if ((e.target as HTMLElement | null)?.closest('[data-music-toggle]')) return;
+      document.removeEventListener('click', startOnFirstGesture);
+      document.removeEventListener('touchend', startOnFirstGesture);
+      document.removeEventListener('keyup', startOnFirstGesture);
       tryPlay(false);
     };
-    document.addEventListener('pointerdown', startOnFirstGesture, { once: true });
-    document.addEventListener('keydown', startOnFirstGesture, { once: true });
+    document.addEventListener('click', startOnFirstGesture);
+    document.addEventListener('touchend', startOnFirstGesture);
+    document.addEventListener('keyup', startOnFirstGesture);
   });
 
   musicToggles.forEach((btn) => {
