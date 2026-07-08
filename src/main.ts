@@ -59,10 +59,10 @@ if (bgMusic && musicToggles.length) {
   if (AudioContextCtor) {
     audioCtx = new AudioContextCtor();
     const gainNode = audioCtx.createGain();
-    gainNode.gain.value = 0.01; // 0 (silent) to 1 (full volume) - tweak this number to taste
+    gainNode.gain.value = 0.15; // 0 (silent) to 1 (full volume) - tweak this number to taste
     audioCtx.createMediaElementSource(bgMusic).connect(gainNode).connect(audioCtx.destination);
   } else {
-    bgMusic.volume = 0.01; // fallback for the rare browser without Web Audio API support
+    bgMusic.volume = 0.15; // fallback for the rare browser without Web Audio API support
   }
 
   const isBm = location.pathname.includes('/bm/');
@@ -85,31 +85,32 @@ if (bgMusic && musicToggles.length) {
   // reading .muted back would tell the toggle button the wrong current state.
   let isMuted = true;
 
-  // isGesture controls whether we wait for audioCtx to resume before playing:
-  // - true (button click / first tap): resume() is gesture-gated and resolves
-  //   almost instantly, so we await it - otherwise iOS starts bgMusic before
-  //   the context leaves "suspended" and play() resolves with no sound at all.
-  // - false (the opportunistic attempt at page load, before any gesture):
-  //   resume() has nothing to unlock it and can hang indefinitely, so we fire
-  //   it and move on rather than block the fallback listeners below forever.
-  const tryPlay = async (muted: boolean, isGesture: boolean) => {
-    if (isGesture) {
-      await audioCtx?.resume();
-    } else {
-      void audioCtx?.resume();
-    }
-    bgMusic.muted = muted;
-    try {
-      await bgMusic.play();
-      isMuted = muted;
-      syncToggles(muted);
-      return true;
-    } catch {
-      return false;
-    }
+  // Resuming audioCtx and calling bgMusic.play() must both fire synchronously
+  // in the same tick a gesture handler runs in - awaiting one before calling
+  // the other risks Safari treating the second call as no longer
+  // gesture-triggered, and silently producing no audible output. The one-frame
+  // silent buffer additionally forces iOS to fully wake its audio hardware,
+  // which resume() alone doesn't always do.
+  const unlockAudioContext = () => {
+    if (!audioCtx) return;
+    void audioCtx.resume();
+    const buffer = audioCtx.createBuffer(1, 1, 22050);
+    const source = audioCtx.createBufferSource();
+    source.buffer = buffer;
+    source.connect(audioCtx.destination);
+    source.start(0);
   };
 
-  tryPlay(false, false).then((started) => {
+  const tryPlay = (muted: boolean) => {
+    unlockAudioContext();
+    bgMusic.muted = muted;
+    return bgMusic.play().then(
+      () => { isMuted = muted; syncToggles(muted); return true; },
+      () => false
+    );
+  };
+
+  tryPlay(false).then((started) => {
     if (started) return;
     // True unmuted autoplay is blocked without a user gesture (this is a
     // hard platform restriction, especially on iOS), so arm a one-time
@@ -121,7 +122,7 @@ if (bgMusic && musicToggles.length) {
     // the visitor should never see a state implying we chose to mute them.
     const startOnFirstGesture = (e: Event) => {
       if ((e.target as HTMLElement | null)?.closest('[data-music-toggle]')) return;
-      tryPlay(false, true);
+      tryPlay(false);
     };
     document.addEventListener('pointerdown', startOnFirstGesture, { once: true });
     document.addEventListener('keydown', startOnFirstGesture, { once: true });
@@ -129,7 +130,7 @@ if (bgMusic && musicToggles.length) {
 
   musicToggles.forEach((btn) => {
     btn.addEventListener('click', () => {
-      tryPlay(!isMuted, true);
+      tryPlay(!isMuted);
     });
   });
 }
