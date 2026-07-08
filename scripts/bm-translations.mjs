@@ -17,7 +17,7 @@ export const translations = {
   navFeedback: 'Maklum Balas',
   navToggleLabel: 'Togol menu',
   musicToggleLabel: 'Senyapkan muzik latar',
-  contactEmbah: 'Hubungi Embah',
+  contactEmbah: 'Tempah Nasi Jawa',
 
   langEnHref: '../',
   langEnClass: 'lang-pill',

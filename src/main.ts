@@ -54,16 +54,31 @@ if (bgMusic && musicToggles.length) {
   bgMusic.src = bgMusicUrl;
   bgMusic.playbackRate = 0.9; // slightly slower than the source recording - tweak this number to taste
 
+  const BASE_GAIN = 0.15; // 0 (silent) to 1 (full volume) - tweak this number to taste
+
   const AudioContextCtor = window.AudioContext ?? (window as unknown as { webkitAudioContext?: typeof AudioContext }).webkitAudioContext;
   let audioCtx: AudioContext | null = null;
+  let gainNode: GainNode | null = null;
   if (AudioContextCtor) {
     audioCtx = new AudioContextCtor();
-    const gainNode = audioCtx.createGain();
-    gainNode.gain.value = 0.15; // 0 (silent) to 1 (full volume) - tweak this number to taste
+    gainNode = audioCtx.createGain();
+    gainNode.gain.value = BASE_GAIN;
     audioCtx.createMediaElementSource(bgMusic).connect(gainNode).connect(audioCtx.destination);
   } else {
-    bgMusic.volume = 0.15; // fallback for the rare browser without Web Audio API support
+    bgMusic.volume = BASE_GAIN; // fallback for the rare browser without Web Audio API support
   }
+
+  // Once bgMusic is routed through audioCtx above, its output plays through
+  // audioCtx.destination - a separate path that doesn't consult bgMusic.muted
+  // at all, so setting .muted silently does nothing audible. The gain node is
+  // the only thing that actually controls volume in that case.
+  const setMuted = (muted: boolean) => {
+    if (gainNode) {
+      gainNode.gain.value = muted ? 0 : BASE_GAIN;
+    } else {
+      bgMusic.muted = muted;
+    }
+  };
 
   const isBm = location.pathname.includes('/bm/');
   const actionLabel = (isMuted: boolean) =>
@@ -103,7 +118,7 @@ if (bgMusic && musicToggles.length) {
 
   const tryPlay = (muted: boolean) => {
     unlockAudioContext();
-    bgMusic.muted = muted;
+    setMuted(muted);
     return bgMusic.play().then(
       () => { isMuted = muted; syncToggles(muted); return true; },
       () => false
