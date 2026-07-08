@@ -79,11 +79,17 @@ if (bgMusic && musicToggles.length) {
     });
   };
 
+  // Tracks whether sound is actually audible right now. This is deliberately
+  // separate from bgMusic.muted: a blocked/rejected play() call still leaves
+  // .muted at whatever we last set it to, even though nothing is playing, so
+  // reading .muted back would tell the toggle button the wrong current state.
+  let isMuted = true;
+
   const tryPlay = (muted: boolean) => {
     void audioCtx?.resume();
     bgMusic.muted = muted;
     return bgMusic.play().then(
-      () => { syncToggles(muted); return true; },
+      () => { isMuted = muted; syncToggles(muted); return true; },
       () => false
     );
   };
@@ -106,7 +112,7 @@ if (bgMusic && musicToggles.length) {
 
   musicToggles.forEach((btn) => {
     btn.addEventListener('click', () => {
-      tryPlay(!bgMusic.muted);
+      tryPlay(!isMuted);
     });
   });
 }
