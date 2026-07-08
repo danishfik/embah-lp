@@ -41,13 +41,29 @@ document.querySelectorAll<HTMLElement>('[data-lang-switch]').forEach((el) => {
 /* ============ BACKGROUND MUSIC ============ */
 // Browsers block autoplay-with-sound on a first visit with no prior user
 // gesture/engagement, so we try unmuted first and fall back to a muted
-// autoplay (started for real via the toggle button) if that's rejected.
+// state until the visitor's first tap/click/key press anywhere on the page,
+// which is when we actually start (unmuted) playback for real.
+//
+// iOS Safari also silently ignores HTMLMediaElement.volume - the element
+// always plays back at full hardware volume no matter what we set it to -
+// so loudness has to be controlled with a Web Audio GainNode instead, which
+// iOS does honor.
 const bgMusic = document.getElementById('bgMusic') as HTMLAudioElement | null;
 const musicToggles = document.querySelectorAll<HTMLButtonElement>('[data-music-toggle]');
 if (bgMusic && musicToggles.length) {
   bgMusic.src = bgMusicUrl;
   bgMusic.playbackRate = 0.9; // slightly slower than the source recording - tweak this number to taste
-  bgMusic.volume = 0.01; // 0 (silent) to 1 (full volume) - tweak this number to taste
+
+  const AudioContextCtor = window.AudioContext ?? (window as unknown as { webkitAudioContext?: typeof AudioContext }).webkitAudioContext;
+  let audioCtx: AudioContext | null = null;
+  if (AudioContextCtor) {
+    audioCtx = new AudioContextCtor();
+    const gainNode = audioCtx.createGain();
+    gainNode.gain.value = 0.01; // 0 (silent) to 1 (full volume) - tweak this number to taste
+    audioCtx.createMediaElementSource(bgMusic).connect(gainNode).connect(audioCtx.destination);
+  } else {
+    bgMusic.volume = 0.01; // fallback for the rare browser without Web Audio API support
+  }
 
   const isBm = location.pathname.includes('/bm/');
   const actionLabel = (isMuted: boolean) =>
@@ -63,21 +79,34 @@ if (bgMusic && musicToggles.length) {
     });
   };
 
-  bgMusic.muted = false;
-  bgMusic.play().then(
-    () => syncToggles(false),
-    () => {
-      bgMusic.muted = true;
-      syncToggles(true);
-      bgMusic.play().catch(() => {});
-    }
-  );
+  const tryPlay = (muted: boolean) => {
+    void audioCtx?.resume();
+    bgMusic.muted = muted;
+    return bgMusic.play().then(
+      () => { syncToggles(muted); return true; },
+      () => false
+    );
+  };
+
+  tryPlay(false).then((started) => {
+    if (started) return;
+    syncToggles(true);
+    // True unmuted autoplay is blocked without a user gesture (this is a
+    // hard platform restriction, especially on iOS), so arm a one-time
+    // listener that starts real playback on the visitor's very first
+    // interaction anywhere on the page - sound plays by default rather
+    // than requiring them to find the dedicated toggle button first.
+    const startOnFirstGesture = (e: Event) => {
+      if ((e.target as HTMLElement | null)?.closest('[data-music-toggle]')) return;
+      tryPlay(false);
+    };
+    document.addEventListener('pointerdown', startOnFirstGesture, { once: true });
+    document.addEventListener('keydown', startOnFirstGesture, { once: true });
+  });
 
   musicToggles.forEach((btn) => {
     btn.addEventListener('click', () => {
-      bgMusic.muted = !bgMusic.muted;
-      if (!bgMusic.muted) bgMusic.play().catch(() => {});
-      syncToggles(bgMusic.muted);
+      tryPlay(!bgMusic.muted);
     });
   });
 }
