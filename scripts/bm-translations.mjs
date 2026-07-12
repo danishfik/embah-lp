@@ -72,17 +72,20 @@ export const translations = {
   feedbackHeading: 'Disukai Pelanggan Tetap Kami',
   feedbackIntro: 'Beberapa kata-kata baik daripada mereka yang pernah kami masakkan.',
   feedback1Text:
-    '"Rasanya macam masakan nenek saya. Rendang sahaja pun dah berbaloi untuk ditempah."',
-  feedback1Role: 'Pelanggan Tetap',
+    '"Alhamdulillah rasa semua ok, kena pada tekak. Yang paling penting untuk dengan portion tu memang berbaloi."',
+  feedback1Role: 'Meru',
   feedback2Text:
-    '"Embah kendalikan katering parti pejabat kami untuk 80 orang dan semuanya sampai panas serta tepat masa. Sangat disyorkan."',
-  feedback2Role: 'Pelanggan Majlis',
-  feedback3Text:
-    '"Kami tempah Embah untuk setiap majlis keluarga sekarang. Konsisten, bahagian yang banyak, dan sentiasa sedap."',
-  feedback3Role: 'Pelanggan Tetap',
+    '"Sambal daging tu tak tau pulak ada sekali dengan perut, memang fav husband. Rezeki dia. Nanti bolehla pelbagaikan lagi menu masakan jawa macam pecal ke."',
+  feedback2Role: 'Bandar Baru Putera',
+  feedback3Text: '"Nasi sedap terubat rindu kat masakan MIL."',
+  feedback3Role: 'Tanjung Rambutan',
+  feedback4Text:
+    '"Saya ni first time makan nasi jawa sebenarnya. Saya makan semalam sedap sambal tempe dengan daging tu. Mak pon cakap sambal tempe sedap, cukup rasa. Portion nasi dan lauk pun banyak."',
+  feedback4Role: 'Menglembu',
   feedbackDot1: 'Testimoni 1',
   feedbackDot2: 'Testimoni 2',
   feedbackDot3: 'Testimoni 3',
+  feedbackDot4: 'Testimoni 4',
 
   ctaEyebrow: 'Rindukan Rasa Rumah?',
   ctaHeading: 'Jom Mulakan Tempahan Anda',
