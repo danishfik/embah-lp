@@ -69,14 +69,18 @@ if (bgMusic && musicToggles.length) {
   }
 
   // Once bgMusic is routed through audioCtx above, its output plays through
-  // audioCtx.destination - a separate path that doesn't consult bgMusic.muted
-  // at all, so setting .muted silently does nothing audible. The gain node is
-  // the only thing that actually controls volume in that case.
+  // audioCtx.destination - a separate path that on spec-compliant browsers
+  // doesn't consult bgMusic.muted at all, so the gain node is normally the
+  // only thing that actually controls volume in that case. Some Chromium
+  // forks (e.g. the Vivo Android browser) don't fully honor that and still
+  // let the element's own .muted leak through, so set both - it's a no-op
+  // on compliant browsers and fixes mute on the ones that leak.
   const setMuted = (muted: boolean) => {
+    bgMusic.muted = muted;
     if (gainNode) {
       gainNode.gain.value = muted ? 0 : BASE_GAIN;
     } else {
-      bgMusic.muted = muted;
+      bgMusic.volume = muted ? 0 : BASE_GAIN;
     }
   };
 
