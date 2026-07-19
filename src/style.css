@@ -205,36 +205,6 @@ h1, h2, h3 { font-family: var(--font-display); font-weight: 600; line-height: 1.
 .lang-pill:hover { opacity: 0.8; }
 .lang-sep { color: var(--gold); opacity: 0.4; font-size: 0.78rem; }
 
-.music-toggle {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 34px;
-  height: 34px;
-  border-radius: 50%;
-  border: 1px solid currentColor;
-  color: var(--gold);
-  transition: opacity 0.3s var(--ease);
-}
-.music-toggle svg { width: 15px; height: 15px; }
-.music-toggle .icon-muted { display: none; }
-.music-toggle.is-muted .icon-unmuted { display: none; }
-.music-toggle.is-muted .icon-muted { display: block; }
-.music-toggle:hover { opacity: 0.75; }
-
-.music-toggle--float {
-  position: fixed;
-  right: 22px;
-  bottom: 22px;
-  z-index: 90;
-  width: 50px;
-  height: 50px;
-  background: var(--maroon-deep);
-  box-shadow: 0 10px 26px -10px rgba(0, 0, 0, 0.5);
-}
-.music-toggle--float svg { width: 20px; height: 20px; }
-body.nav-open .music-toggle--float { opacity: 0; pointer-events: none; }
-
 .nav-toggle {
   display: none;
   flex-direction: column;

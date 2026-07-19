@@ -16,7 +16,6 @@ export const translations = {
   navReview: 'Ulasan',
   navFeedback: 'Maklum Balas',
   navToggleLabel: 'Togol menu',
-  musicToggleLabel: 'Senyapkan muzik latar',
   contactEmbah: 'Tempah Nasi Jawa',
 
   langEnHref: '../',
